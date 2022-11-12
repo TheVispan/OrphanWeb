@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+<div class="container-fluid">
+    <div class="container-fluid">
+        <div class="p-3 " id="searchAndFilteringPanel">
+            <form class="p-3" >
+                <input name="search" id="search" type="text"  class="form-control" placeholder="Искать здесь...">
+            </form>
+            <div class="col-md-12">
+                <form class="form-inline p-2">
+                    <label class="formGroupExampleInput p-3">Дата рождения от</label>
+                    <input id="fromBirthdate" class="form-control" type="date" >
+                    <label class="formGroupExampleInput p-3">до</label>
+                    <input id="toBirthdate" class="form-control" type="date" >
+                </form>
+                <form class="form-inline p-2" >
+
+                    <label class="formGroupExampleInput p-3">Дата поступления от</label>
+                    <input id="fromDateOfReceipt" class="form-control" type="date">
+                    <label class="formGroupExampleInput p-3">до</label>
+                    <input id="toDateOfReceipt" class="form-control" type="date">
+                </form>
+                <form class="form-inline p-2" id="date-of-deduction" style="display:none;">
+                    <label class="formGroupExampleInput p-3">Дата отчисления от</label>
+                    <input id="fromDateOfDeduction" class="form-control" type="date">
+                    <label class="formGroupExampleInput p-3">до</label>
+                    <input id="toDateOfDeduction" class="form-control" type="date">
+                </form>
+                <div class="ml-4 mt-3 form-check-inline ">
+                        <input id="orphan" class="form-check-input" name="orphan" type="checkbox">
+                        <label class="form-check-label">Показать сирот</label>
+                </div>
+                <div class="form-check-inline mt-3">
+                        <input id="disable" class="form-check-input" name="disable" type="checkbox">
+                        <label class="form-check-label">Показать инвалидов</label>
+                </div>
+                <div class="form-check-inline mt-3">
+                        <input id="expelled" class="form-check-input" name="expelled" type="checkbox" onclick="isChecked()">
+                        <label class="form-check-label">Показать всех отчисленных</label>
+                </div>
+                <form class="btn-group" id="groupComboBox">
+                    <select class="combo" id="selectComboBox">
+                        <option value="-">-</option>
+                        <option value="Старшая">Старшая</option>
+                        <option value="Средняя">Средняя</option>
+                        <option value="Младшая">Младшая</option>
+                    </select>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive">
+            <table class="table table-scroll table-hover table-bordered " style="text-align:center;">
+                <thead class="thead-dark ">
+                    <tr class="">
+                        <th class="">№ лд</th>
+                        <th class="">ФИО</th>
+                        <th class="">Пол</th>
+                        <th class="">Дата рождения</th>
+                        <th class="">Место рождения</th>
+                        <th class="">Сирота</th>
+                        <th class="">Дата поступления</th>
+                        <th class="">Дата отчисления</th>
+                    </tr>
+                </thead>
+                <tbody class=" " id="body">
+
+
+                </tbody>
+            </table>
+    </div>
+</div>
+
+<script>
+//Функции поиска
+function ajax(){
+    $.ajax({
+        type: "GET",
+        url: "/search", //Куда отправляется запрос
+        data: { //Что отправляется
+            'from_birthdate' : $('#fromBirthdate').val(),
+            'to_birthdate' : $('#toBirthdate').val(),
+            'from_date_of_receipt' : $('#fromDateOfReceipt').val(),
+            'to_date_of_receipt' : $('#toDateOfReceipt').val(),
+            'from_date_of_deduction' : $('#fromDateOfDeduction').val(),
+            'to_date_of_deduction' : $('#toDateOfDeduction').val(),
+            'orphan' : $('#orphan').is(':checked'),
+            'disable' : $('#disable').is(':checked'),
+            'expelled' : $('#expelled').is(':checked'),
+            'select' : $("#selectComboBox option:selected").text(),
+            'search_text' : $('#search').val(),
+            //'csrfmiddlewaretoken' : $("input[name=csrfmiddlewaretoken]").val()
+        },
+        dataType: 'json', //Тип данных которые придут
+        success: function (data) { //Функция при успешном запросе
+            list = JSON.parse(data)
+            let orphansList = ""
+            for (item in list) {
+                orphansList += getOrphanListItemHTML(list[item])
+            }
+            document.getElementById('body').innerHTML = orphansList
+        }
+    });
+} ajax();
+
+$(function() { //Функция при вызове декйствиях в блоке филтров и поиска
+    $('#searchAndFilteringPanel').change(ajax).keyup(ajax);
+
+});
+
+function getOrphanListItemHTML(orphan) {
+
+    if (orphan.fields.orphan == 1){
+        orphanCheckbox = "Да"
+    } else {
+        orphanCheckbox = "Нет"
+    }
+    if (orphan.fields.gender == 1){
+        orphanGender = "Муж"
+    } else {
+        orphanGender = "Жен"
+    }
+    return  `<tr class="table-blocks" id="list">
+            <th class="table-block">${ orphan.fields.number }</th>
+            <td class="table-block">${ orphan.fields.name }</td>
+            <td class="table-block">${ orphanGender }</td>
+            <td class="table-block">${ orphan.fields.dateofbirth.substr(0,10) }</td>
+            <td class="table-block">${ orphan.fields.placeofbirth }</td>
+            <td class="table-block">${ orphanCheckbox }</td>
+            <td class="table-block">${ orphan.fields.dateofreceipt.substr(0,10) }</td>
+            <td class="table-block">${ orphan.fields.dateofdeduction.substr(0,10) }</td>
+            </tr>
+            <div class = "btn-group-vertical context-menu">
+                <div class="dropdown-menu-verical">
+                    <a class="dropdown-item" href="{% url 'relative'%}">Карта воспитанника</a>
+                    {% if request.user.is_superuser %}
+                    <a class="dropdown-item" href="#">Отчислить</a>
+                    <a class="dropdown-item" href="#">Удалить</a>
+                    {% endif %}
+                </div>
+            </div>`
+}
+</script>
+{% endblock %}

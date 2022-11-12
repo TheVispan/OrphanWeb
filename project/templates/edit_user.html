@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block button_panel %}{% endblock %}
+
+
+{% block content %}
+<div class="container p-5">
+    <h2>Изменение пользователя</h2>
+    <form class="mt-5" method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button class="btn btn-success ml-2" type="submit">Готово</button>
+    </form>
+</div>
+
+{% endblock %}

@@ -10,7 +10,6 @@
             <thead class="thead-dark ">
                 <tr class="">
                     <th class="">Имя пользователя</th>
-                    <th class="">Почта</th>
                     <th class="">Последний вход</th>
 
                 </tr>
@@ -19,13 +18,12 @@
                 {% for user in object_list %}
                 <tr class="table-blocks">
                     <td class="table-block">{{ user.username }}</td>
-                    <td class="table-block">{{ user.email }}</td>
                     <td class="table-block">{{ user.last_login }}</td>
                 </tr>
                 <div class = "btn-group-vertical context-menu">
                     <div class="dropdown-menu-verical">
-                        <a class="dropdown-item" href="{% url 'edit_user'%}">Открыть</a>
-                        <a class="dropdown-item" href="#">Удалить</a>
+                        <a class="dropdown-item" href="{% url 'edit_user' user.pk %}">Изменить</a>
+                        <a class="dropdown-item" href="{% url 'delete_user' user.pk %}">Удалить</a>
                     </div>
                 </div>
                 {% endfor %}

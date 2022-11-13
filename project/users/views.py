@@ -1,45 +1,44 @@
-from django.contrib.auth.forms import PasswordChangeForm, UserChangeForm, UserCreationForm
+from .forms import CustomUserCreationForm, CustomUserChangeForm
+from django.contrib.auth.forms import AdminPasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy
-from django.views import generic
 from django.views.generic import TemplateView
-from django.shortcuts import render, HttpResponseRedirect
+from django.views.generic.edit import UpdateView, DeleteView, CreateView
 
 
-
-
-class CreateView(LoginRequiredMixin, generic.CreateView):
-    form_class = UserCreationForm
+class CreateUserView(LoginRequiredMixin, CreateView):
+    form_class = CustomUserCreationForm
+    template_name = 'create_user.html'
     success_url = reverse_lazy('list')
-    template_name = 'user_create.html'
-    login_url = 'login'
 
-def ChangeView(request):
-    password_form = PasswordChangeForm(request.user)
-    user_form = UserChangeForm(instance=request.user)
+class ChangeUserView(LoginRequiredMixin, UpdateView):
+    model = User
+    form_class = CustomUserChangeForm
+    template_name = 'change_user.html'
+    success_url = reverse_lazy('list')
 
-    if request.method == 'POST':
-        if request.GET.get('type', 'password'):
-            password_form = PasswordChangeForm(request.user, request.POST)
-            if not password_form.is_valid():
-                return HttpResponseRedirect('%s' % (request.path))
-        if request.GET.get('type', 'details'):
-            user_form = PasswordChangeForm(request.POST, instance=request.user)
-            if not user_form.is_valid():
-                return HttpResponseRedirect('%s' % (request.path))
 
-    context = {
-        'password_form': password_form,
-        'user_form': user_form
-    }
-    return render(request, 'edit_user.html', context)
+class ChangePasswordView(LoginRequiredMixin, PasswordChangeView):
+    model = User
+    form_class = AdminPasswordChangeForm
+    template_name = 'change_password.html'
+    success_url = reverse_lazy('list')
+    def get_form_kwargs(self):
+        kwargs = super(ChangePasswordView, self).get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+class DeleteUserView(LoginRequiredMixin, DeleteView):
+    model = User
+    template_name = 'delete_user.html'
+    success_url = reverse_lazy('list')
 
 class UsersListView(LoginRequiredMixin, TemplateView):
     template_name = 'users.html'
     login_url = 'login'
     def get_context_data(self,**kwargs):
-        context = super(UsersListView,self).get_context_data(**kwargs)
-        context['object_list'] = User.objects.all()
+        context = super(UsersListView, self).get_context_data(**kwargs)
+        context['object_list'] = User.objects.filter(is_superuser__icontains='0')
         return context
 

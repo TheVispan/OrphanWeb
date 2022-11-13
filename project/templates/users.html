@@ -22,7 +22,8 @@
                 </tr>
                 <div class = "btn-group-vertical context-menu">
                     <div class="dropdown-menu-verical">
-                        <a class="dropdown-item" href="{% url 'edit_user' user.pk %}">Изменить</a>
+                        <a class="dropdown-item" href="{% url 'edit_user' user.pk %}">Изменить имя</a>
+                        <a class="dropdown-item" href="{% url 'edit_password' user.pk %}">Изменить пароль</a>
                         <a class="dropdown-item" href="{% url 'delete_user' user.pk %}">Удалить</a>
                     </div>
                 </div>

@@ -139,7 +139,7 @@ function getOrphanListItemHTML(orphan) {
                     <a class="dropdown-item" href="{% url 'relative'%}">Карта воспитанника</a>
                     {% if request.user.is_superuser %}
                     <a class="dropdown-item" href="#">Отчислить</a>
-                    <a class="dropdown-item" href="#">Удалить</a>
+                    <a class="dropdown-item" href="${orphan.pk}/delete/">Удалить</a>
                     {% endif %}
                 </div>
             </div>`

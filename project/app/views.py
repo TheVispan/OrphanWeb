@@ -1,8 +1,9 @@
 from django.http import JsonResponse
 from django.core import serializers
 from django.db.models import Q
+from django.urls import reverse_lazy
 from django.views.generic import TemplateView, ListView
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Orphans
@@ -85,13 +86,21 @@ def search(request):
             # Сравнивание множеств на сходство
             orphans = orphans.intersection(groups)
         return JsonResponse(serializers.serialize('json', orphans), safe=False)
+#Удаление сироты
+class DeleteOrphanView(LoginRequiredMixin, DeleteView):
+    model = Orphans
+    template_name = 'delete_orphan.html'
+    success_url = reverse_lazy('home')
 
+#Создание сироты
 class OrphanCreateView(LoginRequiredMixin, CreateView):
     model = Orphans
-    template_name = 'orphan_new.html'
+    template_name = 'create_orphan.html'
     fields = ['number', 'name', 'gender','dateofbirth','placeofbirth','orphan','dateofreceipt','dateofdeduction']
 
+#Родственники
 class RelativeView(LoginRequiredMixin, ListView):
     model = Relatives
     template_name = 'relative.html'
 
+#def ExpelOrphan(request):

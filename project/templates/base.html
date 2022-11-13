@@ -19,7 +19,7 @@
             {% if user.is_authenticated %}
             {% block button_panel %}
             <form class="btn ml-2">
-               {% block create-button %} <a class="btn btn-primary ml-2"  href="{% url 'new_orphan'%}" >+ Создать запись</a>{% endblock %}
+               {% block create-button %} <a class="btn btn-primary ml-2"  href="{% url 'create_orphan'%}" >+ Создать запись</a>{% endblock %}
             </form>
             {% if request.user.is_superuser %}
             <div class="btn-group">

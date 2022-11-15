@@ -7,5 +7,5 @@ urlpatterns = [
     path('<int:pk>/delete/', views.DeleteOrphanView.as_view()),
     path('relative/', views.RelativeView.as_view(), name='relative'),
     path('search/', views.search, name="search"),
-    path('deduct/<int:pk>/', views.deduct)
+    #path('deduct/<int:pk>/', views.deduct)
 ]

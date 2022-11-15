@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% block title %}Главная страница{% endblock title %}
 
 {% block content %}
 
@@ -42,12 +43,19 @@
                         <input id="expelled" class="form-check-input" name="expelled" type="checkbox" onclick="isChecked()">
                         <label class="form-check-label">Показать всех отчисленных</label>
                 </div>
-                <form class="btn-group" id="groupComboBox">
-                    <select class="combo" id="selectComboBox">
-                        <option value="-">-</option>
+                <form class="btn-group">
+                    <select class="combo" id="groupComboBox">
+                        <option value="-">Выберите группу</option>
                         <option value="Старшая">Старшая</option>
                         <option value="Средняя">Средняя</option>
                         <option value="Младшая">Младшая</option>
+                    </select>
+                </form>
+                <form class="btn-group ml-2">
+                    <select class="combo" id="genderComboBox">
+                        <option value="-">Выберите пол</option>
+                        <option value="Муж">Муж</option>
+                        <option value="Жен">Жен</option>
                     </select>
                 </form>
             </div>
@@ -91,7 +99,8 @@ function ajax(){
             'orphan' : $('#orphan').is(':checked'),
             'disable' : $('#disable').is(':checked'),
             'expelled' : $('#expelled').is(':checked'),
-            'select' : $("#selectComboBox option:selected").text(),
+            'select_group' : $("#groupComboBox option:selected").text(),
+            'select_gender' : $("#genderComboBox option:selected").text(),
             'search_text' : $('#search').val(),
             //'csrfmiddlewaretoken' : $("input[name=csrfmiddlewaretoken]").val()
         },
@@ -138,7 +147,7 @@ function getOrphanListItemHTML(orphan) {
                 <div class="dropdown-menu-verical">
                     <a class="dropdown-item" href="{% url 'relative'%}">Карта воспитанника</a>
                     {% if request.user.is_superuser %}
-                    <a class="dropdown-item" href="#">Отчислить</a>
+                    <a class="dropdown-item" href="/deduct/${orphan.pk}">Отчислить</a>
                     <a class="dropdown-item" href="${orphan.pk}/delete/">Удалить</a>
                     {% endif %}
                 </div>

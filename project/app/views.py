@@ -25,7 +25,7 @@ def search(request):
         orphans = Orphans.objects.all()
         if search_text != "":
             #фильтрация по строке поиска
-            search = Orphans.objects.filter(Q(number__iregex=search_text) | Q(name__iregex=search_text) | Q(gender__gendername__iregex=search_text) | Q(placeofbirth__iregex=search_text) | Q(orphan__iregex=search_text))
+            search = Orphans.objects.filter(Q(number__iregex=search_text) | Q(name__iregex=search_text) | Q(placeofbirth__iregex=search_text))
             orphans = orphans.intersection(search)
         # Проверка поля "даты рождения"
         if len(request.GET['from_birthdate']) != 0 or len(request.GET['to_birthdate']) != 0:
@@ -81,10 +81,14 @@ def search(request):
             # Сравнивание множеств на сходство
             orphans = orphans.intersection(disable)
         # Проверка комбобокса "группы"
-        if request.GET['select'] != "-":
-            groups = Orphans.objects.filter(group__groupname__icontains=request.GET['select'])
+        if request.GET['select_group'] != "Выберите группу":
+            groups = Orphans.objects.filter(group__groupname__icontains=request.GET['select_group'])
             # Сравнивание множеств на сходство
             orphans = orphans.intersection(groups)
+        if request.GET['select_gender'] != "Выберите пол":
+            gender = Orphans.objects.filter(gender__gendername__icontains=request.GET['select_gender'])
+            # Сравнивание множеств на сходство
+            orphans = orphans.intersection(gender)
         return JsonResponse(serializers.serialize('json', orphans), safe=False)
 #Удаление сироты
 class DeleteOrphanView(LoginRequiredMixin, DeleteView):
@@ -92,11 +96,12 @@ class DeleteOrphanView(LoginRequiredMixin, DeleteView):
     template_name = 'delete_orphan.html'
     success_url = reverse_lazy('home')
 
+
 #Создание сироты
 class OrphanCreateView(LoginRequiredMixin, CreateView):
     model = Orphans
     template_name = 'create_orphan.html'
-    fields = ['number', 'name', 'gender','dateofbirth','placeofbirth','orphan','dateofreceipt','dateofdeduction']
+    fields = ['number', 'name', 'gender', 'dateofbirth', 'placeofbirth', 'orphan', 'disable', 'dateofreceipt', 'dateofdeduction']
 
 #Родственники
 class RelativeView(LoginRequiredMixin, ListView):

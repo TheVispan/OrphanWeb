@@ -15,6 +15,7 @@ class Groups(models.Model):
         return self.groupname[:50]
 
 class Orphans(models.Model):
+    icon = models.ImageField(blank=True)
     number = models.CharField(max_length=10)
     name = models.CharField(max_length=255)
     gender = models.ForeignKey(Gender, on_delete=models.CASCADE, null=True)
@@ -26,9 +27,9 @@ class Orphans(models.Model):
     disable = models.BooleanField(default=False)
     dateofreceipt = models.DateField(null=True)
     dateofdeduction = models.DateField(null=True)
-    diagnostics = models.CharField(max_length=255, null=True)
-    featuresdiagnostics = models.CharField(max_length=255, null=True)
-    riskgroup = models.CharField(max_length=255, null=True)
+    diagnostics = models.CharField(max_length=255, blank=True)
+    featuresdiagnostics = models.CharField(max_length=255, blank=True)
+    riskgroup = models.CharField(max_length=255, blank=True)
 
 
     def __str__(self):

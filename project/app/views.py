@@ -1,31 +1,34 @@
 from django.http import JsonResponse
 from django.core import serializers
 from django.db.models import Q
-from django.urls import reverse_lazy
+from django.shortcuts import render, redirect
 from django.views.generic import TemplateView, ListView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Orphans
-from .models import Relatives
 
 
 class HomePageView(LoginRequiredMixin, TemplateView):
     template_name = 'home.html'
     login_url = 'login'
 
+# Удаление сироты
+def delete(request):
+    if request.POST.get('items[]') is not None:
+        Orphans.objects.filter(id__in=request.POST.getlist('items[]')).delete()
+    return render(request, 'home.html')
+
 #Функция поиска
 def search(request):
     max = "9999-12-31" #Максимально доступная даты
     min = "0001-01-01"# Минимально доступня дата
     if request.method == "GET":
-        #Получаные данные из ajax запроса
-        search_text = request.GET['search_text']
         #Проверка поля поиска
         orphans = Orphans.objects.all()
-        if search_text != "":
+        if request.GET['search_text'] != "":
             #фильтрация по строке поиска
-            search = Orphans.objects.filter(Q(number__iregex=search_text) | Q(name__iregex=search_text) | Q(placeofbirth__iregex=search_text))
+            search = Orphans.objects.filter(Q(name__iregex=request.GET['search_text']) | Q(placeofbirth__iregex=request.GET['search_text']))
             orphans = orphans.intersection(search)
         # Проверка поля "даты рождения"
         if len(request.GET['from_birthdate']) != 0 or len(request.GET['to_birthdate']) != 0:
@@ -81,20 +84,18 @@ def search(request):
             # Сравнивание множеств на сходство
             orphans = orphans.intersection(disable)
         # Проверка комбобокса "группы"
-        if request.GET['select_group'] != "Выберите группу":
+        if request.GET['select_group'] != "-":
             groups = Orphans.objects.filter(group__groupname__icontains=request.GET['select_group'])
             # Сравнивание множеств на сходство
             orphans = orphans.intersection(groups)
-        if request.GET['select_gender'] != "Выберите пол":
+        if request.GET['select_gender'] != "-":
             gender = Orphans.objects.filter(gender__gendername__icontains=request.GET['select_gender'])
             # Сравнивание множеств на сходство
             orphans = orphans.intersection(gender)
         return JsonResponse(serializers.serialize('json', orphans), safe=False)
-#Удаление сироты
-class DeleteOrphanView(LoginRequiredMixin, DeleteView):
-    model = Orphans
-    template_name = 'delete_orphan.html'
-    success_url = reverse_lazy('home')
+
+
+
 
 
 #Создание сироты
@@ -103,9 +104,5 @@ class OrphanCreateView(LoginRequiredMixin, CreateView):
     template_name = 'create_orphan.html'
     fields = ['number', 'name', 'gender', 'dateofbirth', 'placeofbirth', 'orphan', 'disable', 'dateofreceipt', 'dateofdeduction']
 
-#Родственники
-class RelativeView(LoginRequiredMixin, ListView):
-    model = Relatives
-    template_name = 'relative.html'
 
 #def ExpelOrphan(request):

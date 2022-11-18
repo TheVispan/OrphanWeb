@@ -15,8 +15,8 @@ class Groups(models.Model):
         return self.groupname[:50]
 
 class Orphans(models.Model):
+    id = models.AutoField(primary_key=True)
     icon = models.ImageField(blank=True)
-    number = models.CharField(max_length=10)
     name = models.CharField(max_length=255)
     gender = models.ForeignKey(Gender, on_delete=models.CASCADE, null=True)
     group = models.ForeignKey(Groups, on_delete=models.CASCADE, null=True)
@@ -37,13 +37,5 @@ class Orphans(models.Model):
 
 
 
-class Relatives(models.Model):
-    name = models.CharField(max_length=255)
-    kinship = models.CharField(max_length=255)
-    phonenumbers = models.CharField(max_length=255)
-    address = models.CharField(max_length=255)
-    dateofbirth = models.DateField(null=True)
-    placeofbirth = models.CharField(max_length=255)
-    healthstatus = models.CharField(max_length=255)
 
 

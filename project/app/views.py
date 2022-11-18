@@ -102,7 +102,11 @@ def search(request):
 class OrphanCreateView(LoginRequiredMixin, CreateView):
     model = Orphans
     template_name = 'create_orphan.html'
-    fields = ['number', 'name', 'gender', 'dateofbirth', 'placeofbirth', 'orphan', 'disable', 'dateofreceipt', 'dateofdeduction']
+    fields = ['name', 'icon', 'gender', 'dateofbirth', 'placeofbirth', 'orphan', 'disable', 'dateofreceipt', 'dateofdeduction']
 
+class OrphanChangeView(LoginRequiredMixin, UpdateView):
+    model = Orphans
+    template_name = 'change_orphan.html'
+    fields = ['name', 'icon', 'gender', 'dateofbirth', 'placeofbirth', 'orphan', 'disable', 'dateofreceipt', 'dateofdeduction']
 
 #def ExpelOrphan(request):

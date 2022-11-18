@@ -6,7 +6,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
-from django.views.generic.edit import UpdateView, DeleteView, CreateView
+from django.views.generic.edit import UpdateView, CreateView
+from django.http import HttpResponse
 
 #Создание имени пользователя
 class CreateUserView(LoginRequiredMixin, CreateView):
@@ -34,11 +35,7 @@ def UpdatePassword(request, pk):
     return render(request, 'users/change_password.html', {
         'form': form,
     })
-#Удаление пользователя
-class DeleteUserView(LoginRequiredMixin, DeleteView):
-    model = User
-    template_name = 'users/delete_user.html'
-    success_url = reverse_lazy('list')
+
 #Показывает пользователей в таблице
 class UsersListView(LoginRequiredMixin, TemplateView):
     template_name = 'users/users.html'
@@ -48,3 +45,8 @@ class UsersListView(LoginRequiredMixin, TemplateView):
         context['object_list'] = User.objects.filter(is_superuser__icontains='0')
         return context
 
+#Удаление пользователя
+def delete(request):
+    if request.POST.get('items[]') is not None:
+        User.objects.filter(id__in=request.POST.getlist('items[]')).delete()
+    return HttpResponse()

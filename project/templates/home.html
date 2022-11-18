@@ -65,7 +65,7 @@
             <table class="table table-scroll table-hover table-bordered " style="text-align:center;">
                 <thead class="thead-dark ">
                     <tr class="">
-                        <th class="">№ лд</th>
+                        <th class=""></th>
                         <th class="">ФИО</th>
                         <th class="">Пол</th>
                         <th class="">Дата рождения</th>
@@ -75,83 +75,12 @@
                         <th class="">Дата отчисления</th>
                     </tr>
                 </thead>
-                <tbody class=" " id="body">
 
+                    <tbody class=""id="body"  >
 
-                </tbody>
+                    </tbody>
             </table>
     </div>
 </div>
-
-<script>
-//Функции поиска
-function ajax(){
-    $.ajax({
-        type: "GET",
-        url: "/search", //Куда отправляется запрос
-        data: { //Что отправляется
-            'from_birthdate' : $('#fromBirthdate').val(),
-            'to_birthdate' : $('#toBirthdate').val(),
-            'from_date_of_receipt' : $('#fromDateOfReceipt').val(),
-            'to_date_of_receipt' : $('#toDateOfReceipt').val(),
-            'from_date_of_deduction' : $('#fromDateOfDeduction').val(),
-            'to_date_of_deduction' : $('#toDateOfDeduction').val(),
-            'orphan' : $('#orphan').is(':checked'),
-            'disable' : $('#disable').is(':checked'),
-            'expelled' : $('#expelled').is(':checked'),
-            'select_group' : $("#groupComboBox option:selected").text(),
-            'select_gender' : $("#genderComboBox option:selected").text(),
-            'search_text' : $('#search').val(),
-            //'csrfmiddlewaretoken' : $("input[name=csrfmiddlewaretoken]").val()
-        },
-        dataType: 'json', //Тип данных которые придут
-        success: function (data) { //Функция при успешном запросе
-            list = JSON.parse(data)
-            let orphansList = ""
-            for (item in list) {
-                orphansList += getOrphanListItemHTML(list[item])
-            }
-            document.getElementById('body').innerHTML = orphansList
-        }
-    });
-} ajax();
-
-$(function() { //Функция при вызове декйствиях в блоке филтров и поиска
-    $('#searchAndFilteringPanel').change(ajax).keyup(ajax);
-
-});
-
-function getOrphanListItemHTML(orphan) {
-
-    if (orphan.fields.orphan == 1){
-        orphanCheckbox = "Да"
-    } else {
-        orphanCheckbox = "Нет"
-    }
-    if (orphan.fields.gender == 1){
-        orphanGender = "Муж"
-    } else {
-        orphanGender = "Жен"
-    }
-    return  `<tr class="table-blocks" id="list">
-            <th class="table-block">${ orphan.fields.number }</th>
-            <td class="table-block">${ orphan.fields.name }</td>
-            <td class="table-block">${ orphanGender }</td>
-            <td class="table-block">${ orphan.fields.dateofbirth.substr(0,10) }</td>
-            <td class="table-block">${ orphan.fields.placeofbirth }</td>
-            <td class="table-block">${ orphanCheckbox }</td>
-            <td class="table-block">${ orphan.fields.dateofreceipt.substr(0,10) }</td>
-            <td class="table-block">${ orphan.fields.dateofdeduction.substr(0,10) }</td>
-            </tr>
-            <div class = "btn-group-vertical context-menu">
-                <div class="dropdown-menu-verical">
-                    <a class="dropdown-item" href="{% url 'relative'%}">Карта воспитанника</a>
-                    {% if request.user.is_superuser %}
-                    <a class="dropdown-item" href="/deduct/${orphan.pk}">Отчислить</a>
-                    <a class="dropdown-item" href="${orphan.pk}/delete/">Удалить</a>
-                    {% endif %}
-                </div>
-            </div>`
-}
-</script>
+<script src="{% static 'js/home.js' %}"></script>
 {% endblock %}

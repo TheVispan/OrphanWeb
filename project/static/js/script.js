@@ -47,15 +47,10 @@ window.onscroll = function(e){
 }
 */
 
-//Функция для чекбокса отчисленных
-function isChecked() {
-    if (document.getElementById("expelled").checked) {
-        document.getElementById('date-of-deduction').style.display = "flex"
-    } else {
-        document.getElementById('date-of-deduction').style.display = "none"
-    }
-}
-//Функция для отправки чекбоксов
+
+
+
+
 
 
 

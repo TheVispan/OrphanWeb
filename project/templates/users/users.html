@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
-{% load crispy_forms_tags %}
-{% block button_panel %}{% block create-button %} <a class="btn btn-primary ml-4"  href="{% url 'create'%}" >+ Создать аккаунт</a>{% endblock %}{% endblock %}
+{% load static %}
+{% block create-button %} <a class="btn btn-primary"  href="{% url 'create'%}" >+ Создать аккаунт</a>{% endblock %}
+{% block users %}{% endblock %}
 {% block title %} Пользователи {% endblock title %}
 
 {% block content %}
@@ -9,6 +10,7 @@
         <table class="table table-scroll table-hover table-bordered " style="text-align:center;">
             <thead class="thead-dark ">
                 <tr class="">
+                    <th class="col-1"></th>
                     <th class="">Имя пользователя</th>
                     <th class="">Последний вход</th>
 
@@ -16,7 +18,9 @@
             </thead>
             <tbody class=" " id="body">
                 {% for user in object_list %}
-                <tr class="table-blocks">
+                <tr class="table-blocks user-{{user.pk}}">
+                    {% csrf_token%}
+                    <td class="table-block-checkbox"><input type="checkbox" id="item" value="{{ user.pk }}"></td>
                     <td class="table-block">{{ user.username }}</td>
                     <td class="table-block">{{ user.last_login }}</td>
                 </tr>
@@ -24,7 +28,7 @@
                     <div class="dropdown-menu-verical">
                         <a class="dropdown-item" href="{% url 'edit_user' user.pk %}">Изменить имя</a>
                         <a class="dropdown-item" href="{% url 'edit_password' user.pk %}">Изменить пароль</a>
-                        <a class="dropdown-item" href="{% url 'delete_user' user.pk %}">Удалить</a>
+                        <a class="dropdown-item" id="delete">Удалить</a>
                     </div>
                 </div>
                 {% endfor %}
@@ -32,5 +36,5 @@
         </table>
     </div>
 </div>
-
+<script src="{% static 'js/users.js' %}"></script>
 {% endblock %}

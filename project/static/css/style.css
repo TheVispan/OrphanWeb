@@ -1,3 +1,6 @@
+.dropdown-item{
+    cursor: pointer;
+}
 
 .context-menu {
     display:none;
@@ -34,3 +37,8 @@
     border-radius: .25rem;
 }
 
+.footer{
+    width: 100%;
+    height: 60px;
+    line-height: 60px;
+}

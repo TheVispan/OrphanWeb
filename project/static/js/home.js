@@ -88,7 +88,7 @@ function getOrphanListItemHTML(orphan) {
             </tr>
             <div class = "btn-group-vertical context-menu">
                 <div class="dropdown-menu-verical">
-                    <a class="dropdown-item" href="{% url 'relative'%}">Карта воспитанника</a>
+                    <a class="dropdown-item" href="${orphan.pk}/change/">Карта воспитанника</a>
                 </div>
             </div>`
     }
